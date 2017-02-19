@@ -1,0 +1,8 @@
+[General]
+SECRET_KEY=This is a secret key
+DEBUG=True
+
+[Database]
+SQLALCHEMY_DATABASE_URI=sqlite:///development.db
+SQLALCHEMY_COMMIT_ON_TEARDOWN=True
+SQLALCHEMY_TRACK_MODIFICATIONS=True
