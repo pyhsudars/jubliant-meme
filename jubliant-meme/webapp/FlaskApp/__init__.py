@@ -20,7 +20,7 @@ def parseConfiguration(env):
     settings = dict()
     config = ConfigParser.ConfigParser()
     config.optionxform = str
-    configFile = os.path.join(basedir, "config/{}".format(env))
+    configFile = os.path.join(basedir, "config/{0}".format(env))
     try:
         config.read(configFile)
         for section in config.sections():
@@ -33,7 +33,7 @@ def parseConfiguration(env):
 
 
 def createApp(app):
-    env = os.getenv('APPLICATION_ENV', 'default')
+    env = os.getenv('APPLICATION_ENV', 'dev')
     settings = parseConfiguration(env)
     app.config.update(settings)
     app.register_blueprint(wapi)
