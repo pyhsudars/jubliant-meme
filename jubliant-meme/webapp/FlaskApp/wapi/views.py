@@ -2,10 +2,11 @@
 
 
 from . import wapi
+from flask import render_template
 from flask_login import login_required
 
 
 @wapi.route('/')
-@login_required
 def index():
-    return 'Hello, There!!!'
+    return render_template('index.html')
+

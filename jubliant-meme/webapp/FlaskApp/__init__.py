@@ -5,10 +5,10 @@ import os
 import ConfigParser
 from flask import Flask
 from flask_bootstrap import Bootstrap
-from flask_migrate import Migrate, MigrateCommand
-from flask_script import Manager, Shell
-from wapi import wapi 
+from flask_migrate import Migrate
+from wapi import wapi
 from models import login_manager, db
+from models.users import load_user
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -41,6 +41,8 @@ def createApp(app):
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.session_protection = 'strong'
+    login_manager.login_view = 'index'
+    login_manager.user_loader(load_user)
     migrate = Migrate(app, db)
 
 if __name__ == "__main__":

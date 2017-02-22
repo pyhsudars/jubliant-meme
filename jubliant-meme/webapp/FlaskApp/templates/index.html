@@ -1,0 +1,49 @@
+{% extends "basepage.html" %}
+
+
+{% block title %}Flask App{% endblock %}
+
+{% block custom_navbar %}
+  <div class="navbar-collapse collapse">
+    <ul class="nav navbar-nav">
+      <li><a href="/">Home</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      {% if current_user.is_authenticated %}
+        <li><a href="#">Hi, {{ current_user.nickname.title()|safe }}!</a></li>
+        <li><a href="{{ url_for('wapi.logout') }}">Logout</a></li>
+      {% endif %}
+    </ul>
+  </div>
+{% endblock %}
+
+{% block page_content %}
+  <div class="row">
+    <div class="Absolute-Center is-Responsive">
+      <div class="col-sm-12 col-md-10 col-md-offset-1">
+        <h1>OAuth Demo</h1>
+        {% for message in get_flashed_messages() %}
+          <p><b>Error</b>: {{ message }}</p>
+          {% endfor %}
+          {% if not current_user.is_authenticated %}
+            <h2>You're not authenticated.</h2>
+            <div class="row">
+              <div class="col-sm-5">
+                <a class="btn btn-block btn-social btn-facebook" href="{{ url_for('wapi.oauth_authorize', provider='Facebook') }}" role="button">
+                  <span class="fa fa-facebook"></span> Sign in with Facebook
+                </a>
+              </div>
+              <div class="col-sm-5">
+                <a class="btn btn-block btn-social btn-twitter" href="{{ url_for('wapi.oauth_authorize', provider='Twitter') }}" role="button">
+                  <span class="fa fa-twitter"></span> Sign in with Twitter
+                </a>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+{% endblock %}
+{% block footer %}
+  <p class="text-muted">&copy; Flask App. 2017</p>
+{% endblock %}

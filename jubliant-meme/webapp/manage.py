@@ -3,11 +3,12 @@
 import os
 import sys
 from flask_script import Manager, Shell
-from flask_migrate import Migrate, MigrateCommand
+from flask_migrate import MigrateCommand
 
 
 def make_shell_context():
     return dict(app=app, db=db, User=User)
+
 
 def manage(app):
     createApp(app)
@@ -16,7 +17,11 @@ def manage(app):
     manager.add_command('db', MigrateCommand)
     manager.run()
 
+
 if __name__ == "__main__":
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'FlaskApp')))
-    from FlaskApp import app, createApp
+    sys.path.insert(
+        0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'FlaskApp'))
+    )
+    from FlaskApp import app, createApp, db
+    from models.users import User
     manage(app)
