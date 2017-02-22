@@ -11,4 +11,5 @@ SQLALCHEMY_TRACK_MODIFICATIONS=True
 fb_id=1649427608686391
 fb_secret=00d8ed891309b8195951eea5ad10fc55
 
-
+google_id=1018986531748-scj7iu2qorn97iop18fr336rdcbebqn7.apps.googleusercontent.com
+google_secret=lpIdV0orZN7Iheq9aKLR0lpq
