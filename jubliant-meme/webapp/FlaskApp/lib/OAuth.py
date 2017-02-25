@@ -2,12 +2,25 @@
 
 import json
 from manageCredentials import createEncryptionObject
-from rauth import OAuth1Service, OAuth2Service
-from flask import current_app, url_for, request, redirect, session
+from rauth import OAuth2Service
+from flask import current_app, url_for, request, redirect
 
 
 class OAuthSignIn(object):
     providers = None
+    urls = {
+        'Facebook': {
+            'authorize_url': 'https://graph.facebook.com/oauth/authorize',
+            'access_token_url': 'https://graph.facebook.com/oauth/access_token',
+            'base_url': 'https://graph.facebook.com/'
+        },
+        'Google': {
+            'authorize_url': 'https://accounts.google.com/o/oauth2/auth',
+            'access_token_url': 'https://accounts.google.com/o/oauth2/token',
+            'base_url': 'https://www.googleapis.com/oauth2/v1/'
+        }
+
+    }
 
     def __init__(self, provider_name):
         self.provider_name = provider_name
@@ -21,6 +34,16 @@ class OAuthSignIn(object):
         if oAuthCredentials:
             self.consumer_id = oAuthCredentials.get('id')
             self.consumer_secret = oAuthCredentials.get('secret')
+            providerUrls = OAuthSignIn.urls.get(self.provider_name, {})
+
+        self.service = OAuth2Service(
+            name=self.provider_name,
+            client_id=self.consumer_id,
+            client_secret=self.consumer_secret,
+            authorize_url=providerUrls.get('authorize_url', None),
+            access_token_url=providerUrls.get('access_token_url', None),
+            base_url=providerUrls.get('base_url', None),
+        )
 
     def authorize(self):
         pass
@@ -55,21 +78,6 @@ class OAuthSignIn(object):
 class FacebookSignIn(OAuthSignIn):
     def __init__(self):
         super(FacebookSignIn, self).__init__('Facebook')
-        self.service = OAuth2Service(
-            name='Facebook',
-            client_id=self.consumer_id,
-            client_secret=self.consumer_secret,
-            authorize_url='https://graph.facebook.com/oauth/authorize',
-            access_token_url='https://graph.facebook.com/oauth/access_token',
-            base_url='https://graph.facebook.com/'
-        )
-
-    # def authorize(self):
-    #     return redirect(self.service.get_authorize_url(
-    #         scope='email',
-    #         response_type='code',
-    #         redirect_uri=self.get_callback_url())
-    #     )
 
     def callback(self):
         if 'code' not in request.args:
