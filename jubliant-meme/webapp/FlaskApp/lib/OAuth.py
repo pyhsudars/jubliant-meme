@@ -45,9 +45,6 @@ class OAuthSignIn(object):
             base_url=providerUrls.get('base_url', None),
         )
 
-    def authorize(self):
-        pass
-
     def callback(self):
         pass
 
@@ -64,6 +61,14 @@ class OAuthSignIn(object):
             response_type='code',
             redirect_uri=self.get_callback_url())
         )
+
+    def returnCallbackValues(self, me):
+        return (
+            str(self.provider_name.lower()) + '$' + me['id'],
+            me.get('email').split('@')[0],
+            me.get('email')
+        )
+
 
     @classmethod
     def get_provider(self, provider_name):
@@ -88,11 +93,7 @@ class FacebookSignIn(OAuthSignIn):
                   'redirect_uri': self.get_callback_url()}
         )
         me = oauth_session.get('me?fields=id,email').json()
-        return (
-            'facebook$' + me['id'],
-            me.get('email').split('@')[0],
-            me.get('email')
-        )
+        return self.returnCallbackValues(me)
 
 
 class GoogleSignIn(OAuthSignIn):
@@ -121,8 +122,4 @@ class GoogleSignIn(OAuthSignIn):
         me = oauth_session.get(
                 'https://www.googleapis.com/oauth2/v1/userinfo'
             ).json()
-        return (
-            'google$' + me['id'],
-            me.get('email').split('@')[0],
-            me.get('email')
-        )
+        return self.returnCallbackValues(me)
