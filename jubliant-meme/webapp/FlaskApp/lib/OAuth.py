@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import json
+from manageCredentials import createEncryptionObject
 from rauth import OAuth1Service, OAuth2Service
 from flask import current_app, url_for, request, redirect, session
 
@@ -10,20 +11,16 @@ class OAuthSignIn(object):
 
     def __init__(self, provider_name):
         self.provider_name = provider_name
-        if provider_name == 'Facebook':
-            credentials = {
-                'id': current_app.config.get('fb_id', None),
-                'secret': current_app.config.get('fb_secret', None)
-                }
-        elif provider_name == 'Google':
-            credentials = {
-                'id': current_app.config.get('google_id', None),
-                'secret': current_app.config.get('google_secret', None)
-                }
-        else:
-            credentials = {}
-        self.consumer_id = credentials['id']
-        self.consumer_secret = credentials['secret']
+        authKey = current_app.config.get('oauth_credentials', None)
+        createEncryptionObject.unleashEncoder()
+        credentials = createEncryptionObject.unsealCredentials(
+            createEncryptionObject.encoder, authKey
+        )
+        oAuthCredentials = credentials.get(self.provider_name, None)
+
+        if oAuthCredentials:
+            self.consumer_id = oAuthCredentials.get('id')
+            self.consumer_secret = oAuthCredentials.get('secret')
 
     def authorize(self):
         pass
@@ -36,6 +33,13 @@ class OAuthSignIn(object):
             'wapi.oauth_callback',
             provider=self.provider_name,
             _external=True
+        )
+
+    def authorize(self):
+        return redirect(self.service.get_authorize_url(
+            scope='email',
+            response_type='code',
+            redirect_uri=self.get_callback_url())
         )
 
     @classmethod
@@ -60,12 +64,12 @@ class FacebookSignIn(OAuthSignIn):
             base_url='https://graph.facebook.com/'
         )
 
-    def authorize(self):
-        return redirect(self.service.get_authorize_url(
-            scope='email',
-            response_type='code',
-            redirect_uri=self.get_callback_url())
-        )
+    # def authorize(self):
+    #     return redirect(self.service.get_authorize_url(
+    #         scope='email',
+    #         response_type='code',
+    #         redirect_uri=self.get_callback_url())
+    #     )
 
     def callback(self):
         if 'code' not in request.args:
@@ -93,13 +97,6 @@ class GoogleSignIn(OAuthSignIn):
             authorize_url='https://accounts.google.com/o/oauth2/auth',
             access_token_url='https://accounts.google.com/o/oauth2/token',
             base_url='https://www.googleapis.com/oauth2/v1/'
-        )
-
-    def authorize(self):
-        return redirect(self.service.get_authorize_url(
-            scope='email',
-            response_type='code',
-            redirect_uri=self.get_callback_url())
         )
 
     def callback(self):

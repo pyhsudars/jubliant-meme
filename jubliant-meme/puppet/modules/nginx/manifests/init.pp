@@ -38,7 +38,7 @@ class nginx {
         require => File['/etc/nginx/sites-available/flaskapp.conf'],
     }
     file {'/etc/nginx/nginx.conf':
-        ensure => present, 
+        ensure => present,
         source => "puppet:///modules/nginx/nginx.conf",
         require => File['/etc/nginx/sites-available/flaskapp.conf'],
         notify => Service['nginx'],
@@ -47,6 +47,6 @@ class nginx {
         command => 'gunicorn --bind localhost:5000 wsgi:app &',
         cwd => '/webapp/',
         path    => '/usr/bin/',
-        require => File['/etc/nginx/nginx.conf']
+        require => [File['/etc/nginx/nginx.conf'], Exec['requirements']],
     }
 }
