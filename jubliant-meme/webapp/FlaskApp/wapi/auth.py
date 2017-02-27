@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
-from flask import url_for, redirect, flash, request
+from flask import url_for, redirect, flash
 from flask_login import login_user, current_user, logout_user
 from . import wapi
 from models import db
 from models.users import User
 from lib.OAuth import OAuthSignIn
+from flask import current_app as app
 
 
 @wapi.route('/authorize/<provider>')
 def oauth_authorize(provider):
+    app.logger.info('Info: Authentication in progess for the provider:')
     if current_user.is_authenticated:
         return redirect(url_for('wapi.index'))
     oauth = OAuthSignIn.get_provider(provider)

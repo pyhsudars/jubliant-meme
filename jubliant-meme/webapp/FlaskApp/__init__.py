@@ -3,6 +3,8 @@
 
 import os
 import ConfigParser
+import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
@@ -34,8 +36,13 @@ def parseConfiguration(env):
 
 def createApp(app):
     env = os.getenv('APPLICATION_ENV', 'dev')
+    handler = RotatingFileHandler(
+        'app.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.DEBUG)
     settings = parseConfiguration(env)
     app.config.update(settings)
+    app.logger.addHandler(handler)
+    app.logger.setLevel(logging.DEBUG)
     app.register_blueprint(wapi)
     bootstrap = Bootstrap(app)
     db.init_app(app)

@@ -1,16 +1,16 @@
-$vagrant_debug ||= "false"
+$vagrant_debug ||= "true"
 $vagrant_use_proxy ||= "false"
 $vagrant_proxy_url ||= "http://10.145.20.10:3128"
 $vagrant_default_image ||= "puppetlabs/centos-6.6-64-nocm"
-# $vbox_server = 
-# $vbox_image = 
+# $vbox_server =
+# $vbox_image =
 
 
 #
 # Configure Vagrant
 #
 
-## Always make sure that minimum supported version of vagrant is specified. 
+## Always make sure that minimum supported version of vagrant is specified.
 ## This is important to avoid issues with vagrant compatibility since different people will be running on different versions of vagrant
 Vagrant.require_version ">= 1.8.0"
 
@@ -18,24 +18,24 @@ Vagrant.require_version ">= 1.8.0"
 Vagrant.configure("2") do |config|
     config.ssh.insert_key = false
     config.vm.box_check_update = false
-    
+
     ## Virtual box image setup ##
-    ## 1. We an define a custom box as a part of variable or a url or a ready image from the list of available virtual boxes. 
-    ## In this case I am selecting a default 
-    
+    ## 1. We an define a custom box as a part of variable or a url or a ready image from the list of available virtual boxes.
+    ## In this case I am selecting a default
+
     if defined?($vbox_server) && defined?($vbox_image) then
         config.vm.box = $vbox_image
         config.vm.box_url = $vbox_server + "/" + $vbox_image
     else
         config.vm.box = $vagrant_default_image
     end
-    
+
     ## Setting up proxy for vagrant_debug
     ## 1. Check if you need to operate based on proxy. This value can be either fetched from .vagrant.d from home directory or from the Vagrantfile
     ## 2. Check if "vagrant proxy plugin" is installed. If not installed then install the plugin. Make sure to set the "HTTP_PROXY" before installing the plugin
     ## 3. Set the vagrant proxy url which is the HTTPS proxy address in your location.
     ## 4. Else set the proxy values to be empty.
-    
+
     if $vagrant_use_proxy == "true" then
         if Vagrant.has_plugin?("vagrant-proxyconf") then
             ENV['HTTP_PROXY']     = $vagrant_proxy_url
@@ -58,11 +58,11 @@ Vagrant.configure("2") do |config|
             config.proxy.no_proxy = $vagrant_no_proxy
         end
     end
-    
+
     # Configure VBGuest Plugin
     # After updating your VirtualBox installation might get the following message after when starting you box with "vagrant up".
-    # Message: 'The guest additions on this VM do not match the install version of VirtualBox!' 
-    # Most of the time everything will keep working just fine and you can ignore this message. 
+    # Message: 'The guest additions on this VM do not match the install version of VirtualBox!'
+    # Most of the time everything will keep working just fine and you can ignore this message.
     # But when it doesn't (ie. your mounts won't work anymore), you need to update you guest additions.
     # Fortunately there is the Vbguest plugin!
     # Just go to the directory where your Vagrantfile is located. And type the following:
@@ -86,9 +86,9 @@ Vagrant.configure("2") do |config|
     ## natdnshostresolver1 - This option makes the NAT engine use the host's resolver mechanisms to handle DNS requests
     ## nictype1 - The nic types are added along with natdnshostresolver1 to make sure that that virtual boxes are faster during ssh connection.
     ## nictype2
-    ## ioapic - To enable more cpu's for your virtual machine this option is set as on. At later point you can use vm.cpu to set the number of 
+    ## ioapic - To enable more cpu's for your virtual machine this option is set as on. At later point you can use vm.cpu to set the number of
     ## cpu's that particular machine would hold. You may also use 'vb.customize ["modifyvm", :id, "--cpus"  , "2"   ]' to enable cpu's
-    
+
     config.vm.provider "virtualbox" do |vb|
         vb.customize ["modifyvm", :id, "--vram", "32"]
         vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
@@ -103,7 +103,7 @@ Vagrant.configure("2") do |config|
     end
 
     # Update Puppet
-    # This is a provision script that runs and checks the puppet version. Its always better to do the provision using puppet script since 
+    # This is a provision script that runs and checks the puppet version. Its always better to do the provision using puppet script since
     # it enables you to switch between various flavours of operating systems without changing provision script otherwise based on virtual
     # machines we will have to write the provision script. Say in case of RHEL/Cent OS we need .rpm and for Debian we need .deb packages.
 
@@ -119,11 +119,11 @@ Vagrant.configure("2") do |config|
         puppet.manifests_path = "puppet/manifests"
         puppet.module_path = "puppet/modules"
         puppet.options = "--disable_warnings=deprecations"
-    
+
         if $vagrant_debug == "true" then
             puppet.options += " --verbose --debug"
         end
-        
+
         config.vm.define "webapp", primary: true do |webapp|
             config.vm.hostname = "flask-backend-app"
             config.vm.network "private_network", ip: "192.168.100.50", virtualbox__hostonly: true
