@@ -1,4 +1,4 @@
-$vagrant_debug ||= "true"
+$vagrant_debug ||= "false"
 $vagrant_use_proxy ||= "false"
 $vagrant_proxy_url ||= "http://10.145.20.10:3128"
 $vagrant_default_image ||= "puppetlabs/centos-6.6-64-nocm"

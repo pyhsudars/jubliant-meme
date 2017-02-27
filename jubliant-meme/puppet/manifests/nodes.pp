@@ -1,5 +1,9 @@
+## Select the node - hostname ##
+
 node 'flask-backend-app' {
-    include nginx
-    include epel
-    include python_dependencies
+    if $operatingsystem == 'CentOS' {
+      include 'epel'
+      include cabriolet::webapp
+      include cabriolet::common-RHEL
+    }
 }

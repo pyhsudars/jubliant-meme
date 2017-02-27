@@ -1,0 +1,3 @@
+class cabriolet::common {
+    
+}
