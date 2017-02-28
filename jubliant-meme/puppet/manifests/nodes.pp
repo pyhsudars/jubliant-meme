@@ -4,6 +4,6 @@ node 'flask-backend-app' {
     if $operatingsystem == 'CentOS' {
       include 'epel'
       include cabriolet::webapp
-      include cabriolet::common-RHEL
+      include cabriolet::common
     }
 }

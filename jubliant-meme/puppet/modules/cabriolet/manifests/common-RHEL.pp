@@ -39,10 +39,4 @@ class cabriolet::common-RHEL::dependencies {
     path    => '/usr/bin/',
     require => [Exec['python-dev'], Exec['upgrade-python-pip']]
   }
-  exec { 'gunicorn':
-    command => 'gunicorn wsgi:app --bind localhost:5000 &',
-    cwd => '/webapp/',
-    path    => '/usr/bin/',
-    require => [Exec['python-dev'], Exec['upgrade-python-pip']]
-  }
 }
