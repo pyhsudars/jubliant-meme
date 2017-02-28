@@ -1,31 +1,18 @@
 #!/usr/bin/env python
 
 import os
-import ConfigParser
 from encryptedpickle import encryptedpickle
+from utilis import Utilities
 
 
-def parseConfiguration():
-    """ Parse the config contents of secretfile
-    """
-    secrets = {}
-    config = ConfigParser.ConfigParser()
-    config.optionxform = str
+def parser():
     basedir = os.path.abspath(os.path.dirname(__file__))
     configFile = os.path.join(basedir, "../config/secret.ini")
-    try:
-        config.read(configFile)
-        for section in config.sections():
-            for option in config.options(section):
-                secrets[option] = config.get(section, option)
-    except Exception as err:
-        raise Exception(err)
-
-    return secrets
+    return Utilities.parseConfiguration(configFile)
 
 
 class createEncryptionObject(object):
-    secrets = parseConfiguration()
+    secrets = parser()
     sigPassPhrase = secrets.get('sigPassPhrase')
     encryptionPassPhrase = secrets.get('encryptionPassPhrase')
     encoder = None

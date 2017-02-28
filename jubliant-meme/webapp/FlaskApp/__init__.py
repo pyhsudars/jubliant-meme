@@ -11,6 +11,7 @@ from flask_migrate import Migrate
 from wapi import wapi
 from models import login_manager, db
 from models.users import load_user
+from lib.utilis import Utilities
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -39,7 +40,8 @@ def createApp(app):
     handler = RotatingFileHandler(
         'app.log', maxBytes=10000, backupCount=1)
     handler.setLevel(logging.DEBUG)
-    settings = parseConfiguration(env)
+    iniFile = os.path.join(basedir, "config/{0}".format(env))
+    settings = Utilities.parseConfiguration(iniFile)
     app.config.update(settings)
     app.logger.addHandler(handler)
     app.logger.setLevel(logging.DEBUG)
