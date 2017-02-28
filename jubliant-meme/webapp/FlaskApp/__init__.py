@@ -2,7 +2,6 @@
 
 
 import os
-import ConfigParser
 import logging
 from logging.handlers import RotatingFileHandler
 from flask import Flask
@@ -15,24 +14,6 @@ from lib.utilis import Utilities
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
-
-
-def parseConfiguration(env):
-    """ Parse the config file and return the dict
-    """
-    settings = dict()
-    config = ConfigParser.ConfigParser()
-    config.optionxform = str
-    configFile = os.path.join(basedir, "config/{0}".format(env))
-    try:
-        config.read(configFile)
-        for section in config.sections():
-            for option in config.options(section):
-                settings[option] = config.get(section, option)
-    except Exception as err:
-        raise Exception(err)
-
-    return settings
 
 
 def createApp(app):

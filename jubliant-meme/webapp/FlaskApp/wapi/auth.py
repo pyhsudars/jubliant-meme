@@ -11,8 +11,8 @@ from flask import current_app as app
 
 @wapi.route('/authorize/<provider>')
 def oauth_authorize(provider):
-    app.logger.info('Info: Authentication in progess for the provider:')
     if current_user.is_authenticated:
+        app.logger.info('{} Authenticated.'.format(current_user))
         return redirect(url_for('wapi.index'))
     oauth = OAuthSignIn.get_provider(provider)
     return oauth.authorize()
@@ -20,6 +20,7 @@ def oauth_authorize(provider):
 
 @wapi.route('/logout')
 def logout():
+    app.logger.info('Invoked the logout method.')
     logout_user()
     return redirect(url_for('wapi.index'))
 
@@ -32,6 +33,7 @@ def oauth_callback(provider):
     social_id, username, email = oauth.callback()
     if social_id is None:
         flash('Authentication failed.')
+        app.logger.info('{} Authentication failed.'.format(provider))
         return redirect(url_for('wapi.index'))
     user = User.query.filter_by(social_id=social_id).first()
     if not user:
